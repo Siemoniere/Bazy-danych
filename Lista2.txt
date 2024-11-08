@@ -1,0 +1,230 @@
+1.
+CREATE DATABASE aparaty;
+
+CREATE USER '279772'@'localhost' IDENTIFIED BY 'hladyszewski72';
+
+GRANT SELECT, INSERT, UPDATE ON aparaty.* TO '279772'@'localhost';
+
+FLUSH PRIVILEGES;
+2.
+CREATE TABLE Producent (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    nazwa VARCHAR(50) NOT NULL,
+    kraj VARCHAR(20) DEFAULT 'nieznany',
+    adresKorespondencyjny VARCHAR(100) DEFAULT 'nieznany'
+);
+
+CREATE TABLE Matryca (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    przekatna DECIMAL(4,2) CHECK (przekatna >= 0),
+    rozdzielczosc DECIMAL(3,1) CHECK (rozdzielczosc >= 0),
+    typ VARCHAR(10)
+) AUTO_INCREMENT=100;
+
+CREATE TABLE Obiektyw (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    model VARCHAR(30),
+    minPrzeslona FLOAT CHECK (minPrzeslona >= 0),
+    maxPrzeslona FLOAT CHECK (maxPrzeslona >= 0 AND minPrzeslona < maxPrzeslona)
+);
+
+CREATE TABLE Aparat (
+    model VARCHAR(30),
+    producent INT,
+    matryca INT,
+    obiektyw INT,
+    waga FLOAT CHECK (waga >= 0),
+    typ ENUM('kompaktowy', 'lustrzanka', 'profesjonalny', 'inny'),
+    PRIMARY KEY (model),
+    FOREIGN KEY (producent) REFERENCES Producent(ID),
+    FOREIGN KEY (matryca) REFERENCES Matryca(ID),
+    FOREIGN KEY (obiektyw) REFERENCES Obiektyw(ID)
+);
+3.
+INSERT INTO Aparat (model, producent, matryca, obiektyw, waga, typ) VALUES
+('ModelA1', 1, 100, 1, 0.5, 'kompaktowy'),
+('ModelA2', 2, 101, 2, 0.6, 'lustrzanka'),
+('ModelA3', 3, 102, 3, 1.2, 'profesjonalny'),
+('ModelA4', 1, 103, 4, 0.8, 'inny'),
+('ModelA5', 2, 104, 5, 0.9, 'kompaktowy'),
+('ModelA6', 3, 100, 1, 1.5, 'lustrzanka'),
+('ModelA7', 1, 101, 2, 1.1, 'profesjonalny'),
+('ModelA8', 2, 102, 3, 1.3, 'inny'),
+('ModelA9', 3, 103, 4, 0.7, 'kompaktowy'),
+('ModelA10', 1, 104, 5, 1.4, 'lustrzanka'),
+('ModelA11', 2, 100, 1, 1.0, 'profesjonalny'),
+('ModelA12', 3, 101, 2, 0.8, 'inny'),
+('ModelA13', 1, 102, 3, 0.6, 'kompaktowy'),
+('ModelA14', 2, 103, 4, 1.2, 'lustrzanka'),
+('ModelA15', 3, 104, 5, 1.0, 'profesjonalny');
+
+INSERT INTO Matryca (przekatna, rozdzielczosc, typ) 
+VALUES
+    (3.50, 12.1, 'CCD'),
+    (4.00, 16.2, 'CMOS'),
+    (3.75, 24.3, 'Foveon'),
+    (5.00, 20.0, 'CCD'),
+    (2.75, 10.2, 'CMOS'),
+    (4.20, 18.5, 'LiveMOS'),
+    (3.80, 15.3, 'CCD'),
+    (4.50, 22.1, 'CMOS'),
+    (3.00, 12.8, 'Foveon'),
+    (5.25, 20.5, 'CCD'),
+    (2.90, 10.0, 'CMOS'),
+    (4.10, 19.2, 'LiveMOS'),
+    (3.65, 16.9, 'CCD'),
+    (4.75, 21.0, 'CMOS'),
+    (3.25, 13.5, 'Foveon');
+
+INSERT INTO Obiektyw (model, minPrzeslona, maxPrzeslona) 
+VALUES
+    ('LensA', 1.4, 2.8),
+    ('LensB', 2.0, 4.0),
+    ('LensC', 1.8, 2.8),
+    ('LensD', 3.5, 5.6),
+    ('LensE', 2.2, 4.5),
+    ('LensF', 1.2, 2.0),
+    ('LensG', 2.8, 4.0),
+    ('LensH', 3.2, 5.6),
+    ('LensI', 1.6, 2.4),
+    ('LensJ', 4.0, 5.6),
+    ('LensK', 2.5, 3.5),
+    ('LensL', 1.8, 2.2),
+    ('LensM', 2.4, 3.2),
+    ('LensN', 1.4, 2.0),
+    ('LensO', 3.0, 4.5);
+
+INSERT INTO Producent (nazwa, kraj, adresKorespondencyjny) 
+VALUES
+    ('Canon', 'Japonia', 'Tokyo, 3-30-2 Shimomaruko'),
+    ('Nikon', 'Japonia', 'Tokyo, Shinagawa Intercity Tower C'),
+    ('Sony', 'Japonia', 'Tokyo, 1-7-1 Konan Minato-ku'),
+    ('Olympus', 'Japonia', 'Tokyo, Shinjuku Monolith 3-1'),
+    ('Panasonic', 'Japonia', 'Osaka, 1006 Kadoma-shi'),
+    ('Huawei', 'Chiny', 'Shenzhen, Bantian Longgang District'),
+    ('Xiaomi', 'Chiny', 'Beijing, Haidian District No.68'),
+    ('DJI', 'Chiny', 'Shenzhen, Nanshan District'),
+    ('ZTE', 'Chiny', 'Shenzhen, 55 Hi-tech Road South'),
+    ('Lenovo', 'Chiny', 'Beijing, No. 6 Chuangye Road'),
+    ('Samsung', 'Korea Południowa', 'Seoul, 129 Samsung-ro'),
+    ('LG', 'Korea Południowa', 'Seoul, Yeouido-dong, 20 Yeouinaru-ro'),
+    ('Leica', 'Niemcy', 'Wetzlar, Am Leitz-Park 5'),
+    ('Zeiss', 'Niemcy', 'Oberkochen, Carl-Zeiss-Strasse 22'),
+    ('Pentax', 'Japonia', 'Tokyo, Shinjuku Mitsui Building');
+
+4. 
+DELIMITER $$
+CREATE PROCEDURE generuj ()
+BEGIN
+	DECLARE i INT DEFAULT 1;
+	DECLARE losowy_producent INT;
+	DECLARE losowa_matryca INT;
+	DECLARE losowy_obiektyw INT;
+	DECLARE losowa_waga INT;
+	DECLARE losowy_typ varchar(30);
+
+WHILE i<=100 DO
+	SELECT ID INTO losowy_producent FROM Producent ORDER BY RAND() LIMIT 1;
+	SELECT ID INTO losowa_matryca FROM Matryca ORDER BY RAND() LIMIT 1;
+	SELECT ID INTO losowy_obiektyw FROM Obiektyw ORDER BY RAND() LIMIT 1;
+	SET losowa_waga = ROUND(0.5 + (RAND() * 2.5), 2);
+	SET losowy_typ = ELT(FLOOR(1 + RAND() * 4), 'kompaktowy', 'lustrzanka', 'profesjonalny', 'inny');
+
+	INSERT INTO Aparat VALUES (CONCAT('NowyModelA', i), losowy_producent, losowa_matryca, losowy_obiektyw, losowa_waga, losowy_typ);
+	SET i = i + 1;
+END WHILE;
+END$$
+DELIMITER ;
+//nie, nie powtarza się
+//nie, nie może
+5.
+DELIMITER $$
+CREATE PROCEDURE jaki_najmniejszy (IN id INT)
+BEGIN 
+	SELECT Aparat.model FROM Aparat JOIN Obiektyw on Aparat.obiektyw = Obiektyw.ID WHERE Aparat.producent = id ORDER BY Obiektyw.minPrzeslona limit 1;
+END $$
+DELIMITER;
+6.
+DELIMITER $$
+CREATE TRIGGER wstaw BEFORE INSERT ON Aparat
+FOR EACH ROW
+BEGIN
+	DECLARE ile_producentow INT;
+
+	SELECT COUNT(*) INTO ile_producentow FROM Producent WHERE ID = NEW.producent;
+
+	IF ile_producentow = 0 THEN
+		INSERT INTO Producent (nazwa) VALUES (NULL);
+	END IF; 
+END $$
+DELIMITER ;
+7.
+DELIMITER $$
+CREATE FUNCTION liczba_aparatow (mID INT)
+RETURNS INT DETERMINISTIC
+BEGIN
+	DECLARE ile_modeli INT;
+
+	SELECT COUNT(model) INTO ile_modeli FROM Aparat WHERE matryca = mID;
+
+	RETURN ile_modeli;
+END $$
+DELIMITER ;
+8.
+DELIMITER $$
+CREATE TRIGGER usun_matryce AFTER DELETE ON Aparat
+FOR EACH ROW
+BEGIN
+	DECLARE ile_uzywanych INT DEFAULT 0;
+
+	SELECT COUNT(*) INTO ile_uzywanych FROM Aparat WHERE matryca = OLD.matryca;
+
+	IF ile_uzywanych = 0 THEN
+		DELETE FROM MATRYCA WHERE ID = OLD.matryca;
+	END IF;
+END$$
+DELIMITER ;
+9.
+CREATE VIEW parametry AS
+SELECT Aparat.model, Aparat.waga, Producent.nazwa, Matryca.przekatna, Matryca.rozdzielczosc, Obiektyw.minPrzeslona, Obiektyw.maxPrzeslona FROM Aparat JOIN Obiektyw ON Aparat.obiektyw = Obiektyw.ID JOIN Producent ON Aparat.producent = Producent.ID JOIN Matryca ON Aparat.matryca = Matryca.ID WHERE Aparat.typ LIKE 'lustrzanka' AND Producent.kraj NOT LIKE 'Chiny';
+//nie, nie może
+10.
+CREATE VIEW nazwa_i_kraj AS
+SELECT Aparat.model, Producent.nazwa, Producent.kraj FROM Producent JOIN Aparat ON Producent.ID = Aparat.producent;
+
+DELETE FROM Aparat WHERE Aparat.producent IN (SELECT ID FROM Producent WHERE kraj LIKE 'Chiny');
+//tak, zmieniło się
+11.
+ALTER TABLE Producent ADD COLUMN liczbaModeli INT NOT NULL DEFAULT 0;
+
+UPDATE Producent
+SET liczbaModeli = (SELECT COUNT(*) FROM Aparat WHERE Aparat.producent = Producent.ID);
+
+DELIMITER $$
+CREATE TRIGGER koryguj_wstawienie AFTER INSERT ON Producent
+FOR EACH ROW
+BEGIN
+	UPDATE Producent 
+	SET liczbaModeli = (SELECT COUNT(*) FROM Aparat WHERE Aparat.producent = Producent.ID);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER koryguj_usuniecie AFTER DELETE ON Producent
+FOR EACH ROW
+BEGIN
+	UPDATE Producent 
+	SET liczbaModeli = (SELECT COUNT(*) FROM Aparat WHERE Aparat.producent = Producent.ID);
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER koryguj_zmiane AFTER UPDATE ON Producent
+FOR EACH ROW
+BEGIN
+	UPDATE Producent 
+	SET liczbaModeli = (SELECT COUNT(*) FROM Aparat WHERE Aparat.producent = Producent.ID);
+END$$
+DELIMITER ;
+//nie, nie może
+//będzie działał
