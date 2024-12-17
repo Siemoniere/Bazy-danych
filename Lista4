@@ -1,0 +1,277 @@
+2.
+use library
+db.createCollection("authors")
+db.createCollection("books")
+
+db.authors.insertMany([
+  { name: { first: "Jan", last: "Nowak" }, country: "Polska", birth: new Date("1892-01-03"), death: new Date("1973-09-02") },
+  { name: { first: "Kamil", last: "Kowalski" }, country: "Polska", birth: new Date("1911-07-21"), death: new Date("1992-02-08") },
+  { name: { first: "John", last: "Smith" }, country: "USA", birth: new Date("1899-11-27"), death: new Date("1956-12-28") },
+  { name: { first: "Amraf", last: "Saliba" }, country: "Maroko", birth: new Date("1967-07-01"), death: new Date("2001-03-16") }
+])
+
+db.books.insertMany([
+  {
+    title: "Historia Polski",
+    isbn: "978-83-01-12345-6",
+    publication_year: 1935,
+    language: "Polski",
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    publisher: {
+      name: "PWN",
+      country: "Polska"
+    }
+  },
+  {
+    title: "Kultura i Obyczaje",
+    isbn: "978-83-01-12346-3",
+    publication_year: 1940,
+    language: "Polski",
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    publisher: {
+      name: "PWN",
+      country: "Polska"
+    }
+  },
+  {
+    title: "Matematyka Dla Każdego",
+    isbn: "978-83-01-12347-0",
+    publication_year: 1938,
+    language: "Polski",
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    publisher: {
+      name: "PWN",
+      country: "Polska"
+    }
+  },
+  {
+    title: "Tajemnica Pustyni",
+    isbn: "978-83-01-54321-0",
+    publication_year: 1950,
+    language: "Angielski",
+    author: ObjectId("6760a137a6afe44b1abae16b"), // Amraf Saliba
+    publisher: {
+      name: "Casablanca Publishing",
+      country: "Maroko"
+    }
+  },
+  {
+    title: "Życie na Marsie",
+    isbn: "978-83-01-54322-7",
+    publication_year: 1955,
+    language: "Angielski",
+    author: ObjectId("6760a137a6afe44b1abae16b"), // Amraf Saliba
+    publisher: {
+      name: "Casablanca Publishing",
+      country: "Maroko"
+    }
+  }
+])
+db.books.insertMany([
+  // Książki dla Kamila Kowalskiego
+  {
+    title: "Historia matematyki",
+    isbn: "978-83-02-11111-1",
+    publication_year: 1945,
+    language: "Polski",
+    author: ObjectId("6760a0a6a6afe44b1abae169"), // Kamil Kowalski
+    publisher: {
+      name: "Polska Książka",
+      country: "Polska"
+    }
+  },
+  {
+    title: "Fizyka w praktyce",
+    isbn: "978-83-02-11112-8",
+    publication_year: 1947,
+    language: "Polski",
+    author: ObjectId("6760a0a6a6afe44b1abae169"), // Kamil Kowalski
+    publisher: {
+      name: "Polska Książka",
+      country: "Polska"
+    }
+  },
+
+  // Książki dla Johna Smitha
+  {
+    title: "Modern Physics",
+    isbn: "978-0-03-45678-1",
+    publication_year: 1950,
+    language: "English",
+    author: ObjectId("6760a0f6a6afe44b1abae16a"), // John Smith
+    publisher: {
+      name: "American Science Press",
+      country: "USA"
+    }
+  },
+  {
+    title: "Quantum Mechanics Explained",
+    isbn: "978-0-03-45679-8",
+    publication_year: 1952,
+    language: "English",
+    author: ObjectId("6760a0f6a6afe44b1abae16a"), // John Smith
+    publisher: {
+      name: "American Science Press",
+      country: "USA"
+    }
+  }
+])
+
+//mongoDB nie wymusza schemtu, zatem nie będzie problemu przy wstawianiu np. dat śmierci jako null, pomijania jakichś danych, literówek (wówczas będą widoczne przy wpisaniu tej "pomylonej" danej), czy danych o zupełnie innym schemacie, np
+db.authors.insertOne({
+  pseudonym: "Artysta",
+  country: "Francja",
+  notable_works: ["Dzieło 1", "Dzieło 2"]
+})
+//powyższy dokument ma zupelnie inną strukturę i nie ma problemu ze wstawieniem go
+db.authors.deleteOne({ "pseudonym": "Artysta" }) //usuwamy, aby pozostało czterech autorów
+
+//istnieje jednak wymuszenie poprawności danych - walidacja schematu
+db.runCommand({
+  collMod: "authors",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name", "country", "birth"], //nie ma wymogow dla id, bo jest ono generowane domyslnie
+      properties: {
+        name: {
+          bsonType: "object",
+          required: ["first", "last"],
+          properties: {
+            first: { bsonType: "string" },
+            last: { bsonType: "string" }
+          }
+        },
+        country: { bsonType: "string" },
+        birth: { bsonType: "date" },
+        death: { bsonType: ["date", "null"] }
+      }
+    }
+  }
+})
+//po dodaniu walidatora dane niepoprawne zostaną usunięte automatycznie, a wstawiane bez zachowania zasad nie beda dodawane
+
+db.createCollection("reviews")
+db.reviews.insertMany([
+  {
+    book: ObjectId("6760a222a6afe44b1abae16c"),
+    reviewer: "Jan Kowalski",
+    rating: 2,
+    review_text: "Książka była nieco nudna, ale miała kilka ciekawych momentów."
+  },
+  {
+    book: ObjectId("6760a222a6afe44b1abae16c"),
+    reviewer: "Anna Zielińska",
+    rating: 5,
+    review_text: "Absolutnie wspaniała książka! Polecam każdemu."
+  },
+  {
+    book: ObjectId("6760a222a6afe44b1abae16c"),
+    reviewer: "Kamil Nowak",
+    rating: 4,
+    review_text: "Dobrze napisana, wciągająca fabuła."
+  },
+  {
+    book: ObjectId("6760a222a6afe44b1abae16f"),
+    reviewer: "Jan Kowalski",
+    rating: 3,
+    review_text: "Przyzwoita książka, ale brakowało jej głębi."
+  },
+  {
+    book: ObjectId("6760a2ada6afe44b1abae171"),
+    reviewer: "Anna Zielińska",
+    rating: 4,
+    review_text: "Interesujące podejście do tematu. Dobra lektura dla studentów."
+  },
+  {
+    book: ObjectId("6760a2ada6afe44b1abae171"),
+    reviewer: "Jan Kowalski",
+    rating: 5,
+    review_text: "Świetne ujęcie tematu, bardzo dobrze się czytało!"
+  }
+])
+//dane o rezencencie nie mają żadnego ścisłego powiązania z całą bazą danych, w związku z czym nie potrzeba dla nich unikalnych identyfikatorów, wstawia i wyszukuje się szybciej (bezpośrednie wyszukiwanie), natomiast nie ma relacji z innymi danymi oraz system nie jest wyczulony na potencjalne literówki mogące powodować problemy
+
+db.authors.updateMany({}, { $set: { awards: [] } }) //nie wpłynie to na walidator - wymusza on tylko posiadanie wymienionych danych - dodatkowe nie są zatem zabronione
+db.books.updateMany({}, { $set: { genres: [] } })
+
+//dodajemy dane z nowych pól do wybranych rekordów
+db.authors.updateOne(
+  { "name.first": "Jan", "name.last": "Nowak" },
+  { $set: { awards: [{ name: "Nagroda Literacka", year: 1960 }] } }
+)
+db.books.updateOne(
+  { title: "Historia Polski" },
+  { $set: { genres: ["Historyczna", "Polityczna"] } }
+)
+3.
+let authorDoc = db.authors.findOne({ "name.first": "Jan", "name.last": "Nowak" });
+db.books.find({ author: authorDoc._id });
+
+db.books.find({ "language": "Polski", "genres": "Fantasy" })
+
+db.books.aggregate([
+  {
+    $lookup: { //joinujemy ksiazki
+      from: "reviews",
+      localField: "_id",
+      foreignField: "book",
+      as: "bookReviews"
+    }
+  },
+  {
+    $unwind: "$bookReviews"
+  },
+  {
+    $group: {
+      _id: "$_id",
+      title: { $first: "$title" },
+      avgRating: { $avg: "$bookReviews.rating" }
+    }
+  },
+  {
+    $match: {
+      avgRating: { $gte: 4 }
+    }
+  }
+]);
+
+db.books.aggregate([
+  {
+    $lookup: { //joinujemy autorow
+      from: "authors",
+      localField: "author",
+      foreignField: "_id",
+      as: "author_info"
+    }
+  },
+  {
+    $unwind: "$author_info"
+  },
+  {
+    $match: {
+      "author_info.country": "Polska" //ograniczamy do Polski
+    }
+  },
+  {
+    $lookup: { //joinujemy recenzje
+      from: "reviews",
+      localField: "_id",
+      foreignField: "book",
+      as: "book_reviews"
+    }
+  },
+  {
+    $addFields: {
+      averageRating: { $avg: "$book_reviews.rating" } //wyznaczamy srednia ocene wszystkich ksiazek
+    }
+  },
+  {
+    $project: {
+      _id: 0, //wykluczamy id z selecta
+      title: 1, //reszte zostawiamy
+      "author_info.name.last": 1,
+      averageRating: 1
+    }
+  }
+]);
