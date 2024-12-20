@@ -4,63 +4,63 @@ db.createCollection("authors")
 db.createCollection("books")
 
 db.authors.insertMany([
-  { name: { first: "Jan", last: "Nowak" }, country: "Polska", birth: new Date("1892-01-03"), death: new Date("1973-09-02") },
-  { name: { first: "Kamil", last: "Kowalski" }, country: "Polska", birth: new Date("1911-07-21"), death: new Date("1992-02-08") },
-  { name: { first: "John", last: "Smith" }, country: "USA", birth: new Date("1899-11-27"), death: new Date("1956-12-28") },
-  { name: { first: "Amraf", last: "Saliba" }, country: "Maroko", birth: new Date("1967-07-01"), death: new Date("2001-03-16") }
+  { name: { first: "Mateusz", last: "Wasylkiewicz" }, country: "Polska", birth: new Date("1892-01-03"), death: new Date("1973-09-02") },
+  { name: { first: "Maciej", last: "Gębala" }, country: "Polska", birth: new Date("1911-07-21"), death: new Date("1992-02-08") },
+  { name: { first: "Konrad", last: "Afternoon" }, country: "USA", birth: new Date("1899-11-27"), death: new Date("1956-12-28") },
+  { name: { first: "Christofer", last: "Maaiher" }, country: "Maroko", birth: new Date("1967-07-01"), death: new Date("2001-03-16") }
 ])
 
 db.books.insertMany([
   {
-    title: "Historia Polski",
+    title: "Jak rozkochac w sobie asemblera",
     isbn: "978-83-01-12345-6",
     publication_year: 1935,
     language: "Polski",
-    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Mateusz Wasylkiewicz
     publisher: {
       name: "PWN",
       country: "Polska"
     }
   },
   {
-    title: "Kultura i Obyczaje",
+    title: "Jak postawic qemu na arhu",
     isbn: "978-83-01-12346-3",
     publication_year: 1940,
     language: "Polski",
-    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Mateusz Wasylkiewicz
     publisher: {
       name: "PWN",
       country: "Polska"
     }
   },
   {
-    title: "Matematyka Dla Każdego",
+    title: "Giganci REST API",
     isbn: "978-83-01-12347-0",
     publication_year: 1938,
     language: "Polski",
-    author: ObjectId("6760a06ea6afe44b1abae168"), // Jan Nowak
+    author: ObjectId("6760a06ea6afe44b1abae168"), // Mateusz Wasylkiewicz
     publisher: {
       name: "PWN",
       country: "Polska"
     }
   },
   {
-    title: "Tajemnica Pustyni",
+    title: "Tajemnice algebry",
     isbn: "978-83-01-54321-0",
     publication_year: 1950,
     language: "Angielski",
-    author: ObjectId("6760a137a6afe44b1abae16b"), // Amraf Saliba
+    author: ObjectId("6760a137a6afe44b1abae16b"), // Christofer Maaiher
     publisher: {
       name: "Casablanca Publishing",
       country: "Maroko"
     }
   },
   {
-    title: "Życie na Marsie",
+    title: "Życie kołem niczym ciała odwracalne Z5",
     isbn: "978-83-01-54322-7",
     publication_year: 1955,
     language: "Angielski",
-    author: ObjectId("6760a137a6afe44b1abae16b"), // Amraf Saliba
+    author: ObjectId("6760a137a6afe44b1abae16b"), // Christofer Maaiher
     publisher: {
       name: "Casablanca Publishing",
       country: "Maroko"
@@ -68,48 +68,46 @@ db.books.insertMany([
   }
 ])
 db.books.insertMany([
-  // Książki dla Kamila Kowalskiego
   {
-    title: "Historia matematyki",
+    title: "Sztuczna inteligencja dla inteligentnych",
     isbn: "978-83-02-11111-1",
     publication_year: 1945,
     language: "Polski",
-    author: ObjectId("6760a0a6a6afe44b1abae169"), // Kamil Kowalski
+    author: ObjectId("6760a0a6a6afe44b1abae169"), // Maciej Gębala
     publisher: {
       name: "Polska Książka",
       country: "Polska"
     }
   },
   {
-    title: "Fizyka w praktyce",
+    title: "Vim w praktyce",
     isbn: "978-83-02-11112-8",
     publication_year: 1947,
     language: "Polski",
-    author: ObjectId("6760a0a6a6afe44b1abae169"), // Kamil Kowalski
+    author: ObjectId("6760a0a6a6afe44b1abae169"), // Maciej Gębala
     publisher: {
       name: "Polska Książka",
       country: "Polska"
     }
   },
 
-  // Książki dla Johna Smitha
   {
-    title: "Modern Physics",
+    title: "Fizyka dla ułomnych",
     isbn: "978-0-03-45678-1",
     publication_year: 1950,
     language: "English",
-    author: ObjectId("6760a0f6a6afe44b1abae16a"), // John Smith
+    author: ObjectId("6760a0f6a6afe44b1abae16a"), // Konrad Afternoon
     publisher: {
       name: "American Science Press",
       country: "USA"
     }
   },
   {
-    title: "Quantum Mechanics Explained",
+    title: "Grzyby dla zafascynowanych",
     isbn: "978-0-03-45679-8",
     publication_year: 1952,
     language: "English",
-    author: ObjectId("6760a0f6a6afe44b1abae16a"), // John Smith
+    author: ObjectId("6760a0f6a6afe44b1abae16a"), // Konrad Afternoon
     publisher: {
       name: "American Science Press",
       country: "USA"
@@ -119,12 +117,12 @@ db.books.insertMany([
 
 //mongoDB nie wymusza schemtu, zatem nie będzie problemu przy wstawianiu np. dat śmierci jako null, pomijania jakichś danych, literówek (wówczas będą widoczne przy wpisaniu tej "pomylonej" danej), czy danych o zupełnie innym schemacie, np
 db.authors.insertOne({
-  pseudonym: "Artysta",
-  country: "Francja",
-  notable_works: ["Dzieło 1", "Dzieło 2"]
+  pseudonym: "Wasyl",
+  country: "El Salvador",
+  notable_works: ["Miteusz", "Steam"]
 })
 //powyższy dokument ma zupelnie inną strukturę i nie ma problemu ze wstawieniem go
-db.authors.deleteOne({ "pseudonym": "Artysta" }) //usuwamy, aby pozostało czterech autorów
+db.authors.deleteOne({ "pseudonym": "Wasyl" }) //usuwamy, aby pozostało czterech autorów
 
 //istnieje jednak wymuszenie poprawności danych - walidacja schematu
 db.runCommand({
@@ -155,37 +153,37 @@ db.createCollection("reviews")
 db.reviews.insertMany([
   {
     book: ObjectId("6760a222a6afe44b1abae16c"),
-    reviewer: "Jan Kowalski",
+    reviewer: "Wojciech Typer",
     rating: 2,
-    review_text: "Książka była nieco nudna, ale miała kilka ciekawych momentów."
+    review_text: "Książka była nieco nudna, ale nauczyłem się bardzo wiele z zakresu asemblera."
   },
   {
     book: ObjectId("6760a222a6afe44b1abae16c"),
-    reviewer: "Anna Zielińska",
+    reviewer: "Jakub Kogut",
     rating: 5,
-    review_text: "Absolutnie wspaniała książka! Polecam każdemu."
+    review_text: "Absolutnie wspaniała książka! Polecam każdemu i kłaniam się w pas!"
   },
   {
     book: ObjectId("6760a222a6afe44b1abae16c"),
-    reviewer: "Kamil Nowak",
+    reviewer: "Wojciech Typer",
     rating: 4,
-    review_text: "Dobrze napisana, wciągająca fabuła."
+    review_text: "Dobrze napisana, lecz wyglada na plagiat."
   },
   {
     book: ObjectId("6760a222a6afe44b1abae16f"),
-    reviewer: "Jan Kowalski",
+    reviewer: "Mateusz Wasylkiewicz",
     rating: 3,
-    review_text: "Przyzwoita książka, ale brakowało jej głębi."
+    review_text: "Przyzwoita książka, ale nadal nic nie rozumiem."
   },
   {
     book: ObjectId("6760a2ada6afe44b1abae171"),
-    reviewer: "Anna Zielińska",
+    reviewer: "279730",
     rating: 4,
-    review_text: "Interesujące podejście do tematu. Dobra lektura dla studentów."
+    review_text: "Interesuję się grzybami, lecz to chyba nie do końca dla mnie."
   },
   {
     book: ObjectId("6760a2ada6afe44b1abae171"),
-    reviewer: "Jan Kowalski",
+    reviewer: "Christofer Maaiher",
     rating: 5,
     review_text: "Świetne ujęcie tematu, bardzo dobrze się czytało!"
   }
@@ -197,18 +195,18 @@ db.books.updateMany({}, { $set: { genres: [] } })
 
 //dodajemy dane z nowych pól do wybranych rekordów
 db.authors.updateOne(
-  { "name.first": "Jan", "name.last": "Nowak" },
+  { "name.first": "Mateusz", "name.last": "Wasylkiewicz" },
   { $set: { awards: [{ name: "Nagroda Literacka", year: 1960 }] } }
 )
 db.books.updateOne(
-  { title: "Historia Polski" },
-  { $set: { genres: ["Historyczna", "Polityczna"] } }
+  { title: "Jak rozkochac w sobie asemblera" },
+  { $set: { genres: ["Inteligentna", "Wysublimowana"] } }
 )
 3.
-let authorDoc = db.authors.findOne({ "name.first": "Jan", "name.last": "Nowak" });
+let authorDoc = db.authors.findOne({ "name.first": "Mateusz", "name.last": "Wasylkiewicz" });
 db.books.find({ author: authorDoc._id });
 
-db.books.find({ "language": "Polski", "genres": "Fantasy" })
+db.books.find({ "language": "Polski", "genres": "Inteligentna" })
 
 db.books.aggregate([
   {
